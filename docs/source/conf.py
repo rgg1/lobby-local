@@ -30,7 +30,7 @@ html_static_path = ['_static']
 # Add the path to your Python package source code
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../src/'))
+sys.path.insert(0, os.path.abspath('../../../src/'))
 
 # Enable the autodoc extension
 extensions = [
