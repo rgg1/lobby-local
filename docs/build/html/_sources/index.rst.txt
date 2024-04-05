@@ -14,6 +14,7 @@ Welcome to LobbyView's documentation
    installation
    usage
    api
+   registration
 
 
 Indices and tables
