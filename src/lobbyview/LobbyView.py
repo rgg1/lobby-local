@@ -696,6 +696,7 @@ class LobbyView:
         query_string = '&'.join(query_params)
         data = self.get_data(f'/api/bill_client_networks?{query_string}')
 
+
         return BillClientNetworkResponse(data)
 
 if __name__ == "__main__":
