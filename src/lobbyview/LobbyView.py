@@ -322,15 +322,15 @@ class LobbyView:
         """
         Gets legislator information from the LobbyView API based on the provided parameters.
 
-        :param legislator_id: Unique identifier of the legislator from LobbyView
-        :param legislator_govtrack_id: Unique identifier of the legislator from GovTrack
-        :param legislator_first_name: First name of the legislator
-        :param legislator_last_name: Last name of the legislator
-        :param legislator_full_name: Full name of the legislator
-        :param legislator_gender: Gender of the legislator
-        :param min_birthday: Minimum birthday of the legislator (YYYY-MM-DD)
-        :param max_birthday: Maximum birthday of the legislator (YYYY-MM-DD)
-        :param page: Page number of the results
+        :param legislator_id: str, Unique identifier of the legislator from LobbyView
+        :param legislator_govtrack_id: str, Unique identifier of the legislator from GovTrack
+        :param legislator_first_name: str, First name of the legislator
+        :param legislator_last_name: str, Last name of the legislator
+        :param legislator_full_name: str, Full name of the legislator
+        :param legislator_gender: str, Gender of the legislator
+        :param min_birthday: str, Minimum birthday of the legislator (YYYY-MM-DD)
+        :param max_birthday: str, Maximum birthday of the legislator (YYYY-MM-DD)
+        :param page: int, Page number of the results, default is 1
         :return: LegislatorResponse object containing the legislator data
 
         >>> lobbyview = LobbyView(LOBBYVIEW_TOKEN)
