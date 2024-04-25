@@ -322,7 +322,8 @@ class LobbyView:
         """
         Gets legislator information from the LobbyView API based on the provided parameters.
 
-        :param legislator_id: str, Unique identifier of the legislator from LobbyView
+        :param str legislator_id: str, Unique identifier of the legislator from LobbyView
+        :type legislator_id: str
         :param legislator_govtrack_id: str, Unique identifier of the legislator from GovTrack
         :param legislator_first_name: str, First name of the legislator
         :param legislator_last_name: str, Last name of the legislator
