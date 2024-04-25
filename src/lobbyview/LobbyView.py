@@ -428,7 +428,7 @@ class LobbyView:
         Gets bill information from the LobbyView API based on the provided parameters.
 
         :param int congress_number: Session of Congress
-        :param str bill_chamber: Chamber of the legislative branch
+        :param str bill_chamber: Chamber of the legislative branch \n
         (Component of the bill_id composite key)
         :param str bill_resolution_type: Bill type (Component of the bill_id composite 
         key)
