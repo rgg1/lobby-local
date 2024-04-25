@@ -428,21 +428,21 @@ class LobbyView:
         Gets bill information from the LobbyView API based on the provided parameters.
 
         :param int congress_number: Session of Congress
-        :param str bill_chamber: Chamber of the legislative branch |
-            (Component of the bill_id composite key) LATEST AHH
+        :param str bill_chamber: Chamber of the legislative branch
+            (Component of the bill_id composite key)
         :param str bill_resolution_type: Bill type (Component of the bill_id composite 
-        key)
+            key)
         :param int bill_number: Bill number (Component of the bill_id composite key)
         :param str bill_state: Bill status
         :param str legislator_id: Sponsor of the bill
         :param str min_introduced_date: Minimum date of introduction to Congress
-        (YYYY-MM-DD)
+            (YYYY-MM-DD)
         :param str max_introduced_date: Maximum date of introduction to Congress
-        (YYYY-MM-DD)
+            (YYYY-MM-DD)
         :param str min_updated_date: Minimum date of most recent status change
-        (YYYY-MM-DD)
+            (YYYY-MM-DD)
         :param str max_updated_date: Maximum date of most recent status change
-        (YYYY-MM-DD)
+            (YYYY-MM-DD)
         :param int page: Page number of the results, default is 1
         :return: BillResponse object containing the bill data
 
