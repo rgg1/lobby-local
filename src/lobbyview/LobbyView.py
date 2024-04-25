@@ -429,7 +429,7 @@ class LobbyView:
 
         :param int congress_number: Session of Congress
         :param str bill_chamber: Chamber of the legislative branch |
-        (Component of the bill_id composite key) BRUHH
+            (Component of the bill_id composite key) LATEST AHH
         :param str bill_resolution_type: Bill type (Component of the bill_id composite 
         key)
         :param int bill_number: Bill number (Component of the bill_id composite key)
