@@ -39,7 +39,7 @@ class LobbyViewError(Exception):
     """
     def __str__(self):
         """
-        Returns a string representation of the error, which is the name of the class.
+        :return str: Name of the class
         """
         return self.__class__.__name__
 
