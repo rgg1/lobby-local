@@ -19,12 +19,6 @@ This includes information on:
 
 This module also defines several custom exceptions to handle errors that may occur when
 interacting with the LobbyView API.
-
-The main class that users interact with is the LobbyViewResponse class. This class
-encapsulates the data returned by the API and provides methods for navigating through the
-data. It includes the actual data, the current page number, the total number of pages, and
-the total number of rows available. Users can use this class to easily access the data
-returned by the API and navigate through paginated results.
 '''
 import http.client
 import json
@@ -94,8 +88,19 @@ class LobbyViewResponse:
         Initializes the LobbyViewResponse object with the provided JSON data.
 
         :param dict data: JSON data from the LobbyView API response
-        :raises Exception: If the current page number is greater than the total number of
-        pages
+        :raises InvalidPageNumberError: If the current page number is greater than the total number
+            of pages
+
+        >>> data = {
+        ...     'data': [],
+        ...     'currentPage': 2,
+        ...     'totalPage': 1,
+        ...     'totalNumber': 0
+        ... }
+        >>> response = LobbyViewResponse(data)
+        Traceback (most recent call last):
+        ...
+        InvalidPageNumberError: InvalidPageNumberError
         """
         self.data = data['data']                     # the actual data
         self.current_page = int(data['currentPage']) # current page number
@@ -108,19 +113,60 @@ class LobbyViewResponse:
 
     def __str__(self):
         """
-        Returns a string representation of the data.
+        :return str: JSON data formatted with indentation
+
+        >>> data = {
+        ...     'data': [{'name': 'Alice'}, {'name': 'Bob'}],
+        ...     'currentPage': 1,
+        ...     'totalPage': 1,
+        ...     'totalNumber': 2
+        ... }
+        >>> response = LobbyViewResponse(data)
+        >>> print(response)
+        [
+          {
+            "name": "Alice"
+          },
+          {
+            "name": "Bob"
+          }
+        ]
         """
         return json.dumps(self.data, indent=2)
 
     def __iter__(self):
         """
-        Returns an iterator for the data.
+        :return: Iterator for the data
+
+        >>> data = {
+        ...     'data': [{'name': 'Alice'}, {'name': 'Bob'}],
+        ...     'currentPage': 1,
+        ...     'totalPage': 1,
+        ...     'totalNumber': 2
+        ... }
+        >>> response = LobbyViewResponse(data)
+        >>> for item in response:
+        ...     print(item)
+        {'name': 'Alice'}
+        {'name': 'Bob'}
         """
         return iter(self.data)
 
     def page_info(self):
         """
-        Returns a string representation of the current page information.
+        :return str: Current page number, total pages, and total rows
+
+        >>> data = {
+        ...     'data': [],
+        ...     'currentPage': 1,
+        ...     'totalPage': 2,
+        ...     'totalNumber': 0
+        ... }
+        >>> response = LobbyViewResponse(data)
+        >>> print(response.page_info())
+        Current Page: 1
+        Total Pages: 2
+        Total Rows: 0
         """
         return f"Current Page: {self.current_page}\nTotal Pages: {self.total_pages}\nTotal Rows: {self.total_rows}"
 
@@ -130,13 +176,15 @@ class LegislatorResponse(LobbyViewResponse):
     """
     def __str__(self):
         """
-        Returns a string representation of the legislator data.
-        Displays the legislator's full name and ID.
+        :return str: representation of the legislator data
+            which includes the legislator's full name and ID
         """
         output = "Legislators:\n"
-        for legislator in self.data:
+        # uses self because LobbyViewResponse is a parent class with an iter method
+        for legislator in self:
             output += f"  {legislator['legislator_full_name']} (ID: {legislator['legislator_id']})\n"
-        return output
+        # remove the trailing newline character
+        return output.rstrip()
 
 class BillResponse(LobbyViewResponse):
     """
@@ -144,13 +192,13 @@ class BillResponse(LobbyViewResponse):
     """
     def __str__(self):
         """
-        Returns a string representation of the bill data.
-        Displays the bill number, Congress number, and sponsor ID.
+        :return str: representation of the bill data
+            which includes the bill number, Congress number, and sponsor ID
         """
         output = "Bills:\n"
-        for bill in self.data:
+        for bill in self:
             output += f"  {bill['bill_number']} (Congress: {bill['congress_number']}, Sponsor: {bill['legislator_id']})\n"
-        return output
+        return output.rstrip()
 
 class ClientResponse(LobbyViewResponse):
     """
@@ -158,13 +206,13 @@ class ClientResponse(LobbyViewResponse):
     """
     def __str__(self):
         """
-        Returns a string representation of the client data.
-        Displays the client name and ID.
+        :return str: representation of the client data
+            which includes the client name and ID
         """
         output = "Clients:\n"
-        for client in self.data:
+        for client in self:
             output += f"  {client['client_name']} (ID: {client['client_uuid']})\n"
-        return output
+        return output.rstrip()
 
 class ReportResponse(LobbyViewResponse):
     """
@@ -172,13 +220,13 @@ class ReportResponse(LobbyViewResponse):
     """
     def __str__(self):
         """
-        Returns a string representation of the report data.
-        Displays the report UUID, year, and quarter.
+        :return str: representation of the report data
+            which includes the report UUID, year, and quarter
         """
         output = "Reports:\n"
-        for report in self.data:
+        for report in self:
             output += f"  {report['report_uuid']} (Year: {report['report_year']}, Quarter: {report['report_quarter_code']})\n"
-        return output
+        return output.rstrip()
 
 class IssueResponse(LobbyViewResponse):
     """
@@ -186,13 +234,13 @@ class IssueResponse(LobbyViewResponse):
     """
     def __str__(self):
         """
-        Returns a string representation of the issue data.
-        Displays the issue code, report UUID, and issue ordi.
+        :return str: representation of the issue data
+            which includes the issue code, report UUID, and issue ordi
         """
         output = "Issues:\n"
-        for issue in self.data:
+        for issue in self:
             output += f"  {issue['issue_code']} (Report UUID: {issue['report_uuid']}, Issue Ordi: {issue['issue_ordi']})\n"
-        return output
+        return output.rstrip()
 
 class NetworkResponse(LobbyViewResponse):
     """
@@ -200,13 +248,13 @@ class NetworkResponse(LobbyViewResponse):
     """
     def __str__(self):
         """
-        Returns a string representation of the network data.
-        Displays the client UUID, legislator ID, year, and number of bills sponsored.
+        :returnstr : representation of the network data
+            which includes the client UUID, legislator ID, year, and number of bills sponsored
         """
         output = "Networks:\n"
-        for network in self.data:
+        for network in self:
             output += f"  Client UUID: {network['client_uuid']}, Legislator ID: {network['legislator_id']}, Year: {network['report_year']}, Bills Sponsored: {network['n_bills_sponsored']}\n"
-        return output
+        return output.rstrip()
 
 class TextResponse(LobbyViewResponse):
     """
@@ -214,13 +262,13 @@ class TextResponse(LobbyViewResponse):
     """
     def __str__(self):
         """
-        Returns a string representation of the text data.
-        Displays the issue code and text.
+        :return str: representation of the text data
+            which includes the issue code and text
         """
         output = "Texts:\n"
-        for text in self.data:
+        for text in self:
             output += f"  Issue Code: {text['issue_code']}, Issue Text: {text['issue_text']}\n"
-        return output
+        return output.rstrip()
 
 class QuarterLevelNetworkResponse(LobbyViewResponse):
     """
@@ -228,14 +276,14 @@ class QuarterLevelNetworkResponse(LobbyViewResponse):
     """
     def __str__(self):
         """
-        Returns a string representation of the quarter-level network data.
-        Displays the client UUID, legislator ID, year, quarter, and number of bills
-        sponsored.
+        :return str: representation of the quarter-level network data
+            which includes the client UUID, legislator ID, year, quarter, and 
+            number of bills sponsored
         """
         output = "Quarter-Level Networks:\n"
-        for network in self.data:
+        for network in self:
             output += f"  Client UUID: {network['client_uuid']}, Legislator ID: {network['legislator_id']}, Year: {network['report_year']}, Quarter: {network['report_quarter_code']}, Bills Sponsored: {network['n_bills_sponsored']}\n"
-        return output
+        return output.rstrip()
 
 class BillClientNetworkResponse(LobbyViewResponse):
     """
@@ -243,13 +291,13 @@ class BillClientNetworkResponse(LobbyViewResponse):
     """
     def __str__(self):
         """
-        Returns a string representation of the bill-client network data.
-        Displays the bill number, client UUID, and issue ordi.
+        :return str: representation of the bill-client network data
+            which includes the bill number, client UUID, and issue ordi
         """
         output = "Bill-Client Networks:\n"
-        for network in self.data:
+        for network in self:
             output += f"  Bill Number: {network['bill_number']}, Client UUID: {network['client_uuid']}, Issue Ordi: {network['issue_ordi']}\n"
-        return output
+        return output.rstrip()
 
 class LobbyView:
     """
@@ -288,13 +336,31 @@ class LobbyView:
         Returns the JSON response data.
 
         :param str query_string: Query string for the API endpoint
-        :return: JSON data from the API response
+        :return dict: JSON data from the API response
         :raises UnauthorizedError: If the API returns a 401 Unauthorized status code
         :raises TooManyRequestsError: If the API returns a 429 Too Many Requests status
-        code
+            code
         :raises PartialContentError: If the API returns a 206 Partial Content status code
         :raises UnexpectedStatusCodeError: If the API returns an unexpected status code
         :raises RequestError: If an error occurs during the request
+
+        >>> lobbyview = LobbyView("invalid_token", test_connection=False)
+        >>> lobbyview.get_data('/api/legislators')
+        Traceback (most recent call last):
+        ...
+        UnauthorizedError: UnauthorizedError
+
+        >>> lobbyview = LobbyView(LOBBYVIEW_TOKEN)
+        >>> lobbyview.get_data('/api/invalid_endpoint')
+        Traceback (most recent call last):
+        ...
+        UnexpectedStatusCodeError: UnexpectedStatusCodeError
+
+        >>> lobbyview = LobbyView(LOBBYVIEW_TOKEN)
+        >>> lobbyview.get_data('/api/legislators?invalid_param=value')
+        Traceback (most recent call last):
+        ...
+        UnexpectedStatusCodeError: UnexpectedStatusCodeError
         """
         try:
             query_string = query_string.replace(" ", "%20")
@@ -327,7 +393,7 @@ class LobbyView:
 
         :param function func: The API endpoint function to be paginated.
         :param dict kwargs: Additional keyword arguments to be passed to the API endpoint
-        function.
+            function.
         :return: A generator object that yields paginated results one item at a time.
         :raises PartialContentError: If the API returns a 206 Partial Content status code
         :raises LobbyViewError: If a different error occurs during pagination
@@ -342,6 +408,142 @@ class LobbyView:
 
         for client in lobbyview.paginate(lobbyview.clients, client_name='Microsoft', min_naics=500000):
             print(f'Client: {client['client_name']} - NAICS: {client['primary_naics']}')
+
+        >>> lobbyview = LobbyView(LOBBYVIEW_TOKEN)
+        >>> for legislator in lobbyview.paginate(lobbyview.legislators, legislator_first_name="John", legislator_last_name="McCain"):
+        ...     print(f"Legislator: {legislator['legislator_full_name']}")
+        Retrieving page 1...
+        Legislator: John McCain
+
+        >>> for bill in lobbyview.paginate(lobbyview.bills, congress_number=111, bill_chamber="H", bill_number=4173):
+        ...     print(f"Bill: {bill['bill_number']} - {bill['bill_chamber']}")
+        Retrieving page 1...
+        Bill: 4173 - H
+
+        >>> for client in lobbyview.paginate(lobbyview.clients, client_name='InvalidClientName'):
+        ...     print(f"Client: {client['client_name']} - NAICS: {client['primary_naics']}")
+        Retrieving page 1...
+        Error occurred: InvalidPageNumberError
+
+        >>> lobbyview = LobbyView(LOBBYVIEW_TOKEN)
+        >>> for network in lobbyview.paginate(lobbyview.bill_client_networks, congress_number=114, bill_chamber="H", bill_number=1174, client_uuid="44563806-56d2-5e99-84a1-95d22a7a69b3"):
+        ...     print(f"Issue Ordi: {network['issue_ordi']}")
+        Retrieving page 1...
+        Issue Ordi: 2
+        Issue Ordi: 5
+        Issue Ordi: 4
+        ...
+
+        >>> lobbyview = LobbyView(LOBBYVIEW_TOKEN)
+        >>> for text in lobbyview.paginate(lobbyview.texts, issue_code="HCR", issue_text="covid"):
+        ...     print(f"Issue Code: {text['issue_code']}")
+        Retrieving page 1...
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Retrieving page 2...
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        Issue Code: HCR
+        ...
         """
         page = 1
 
@@ -377,7 +579,7 @@ class LobbyView:
 
         :param str legislator_id: Unique identifier of the legislator from LobbyView
         :param str legislator_govtrack_id: Unique identifier of the legislator from
-        GovTrack
+            GovTrack
         :param str legislator_first_name: First name of the legislator
         :param str legislator_last_name: Last name of the legislator
         :param str legislator_full_name: Full name of the legislator
@@ -394,6 +596,16 @@ class LobbyView:
         >>> output = lobbyview.legislators(legislator_id="M000303")
         >>> output.data[0]['legislator_full_name']
         'John McCain'
+
+        >>> output = lobbyview.legislators(legislator_first_name="John", legislator_last_name="McCain")
+        >>> print(output)
+        Legislators:
+          John McCain (ID: M000303)
+
+        >>> output = lobbyview.legislators(legislator_govtrack_id=412755, legislator_full_name="TJ Cox", legislator_gender="M", min_birthday="1963-03-14", max_birthday="1963-08-14")
+        >>> print(output)
+        Legislators:
+          TJ Cox (ID: C001124)
         """
         query_params = []
         if legislator_id:
@@ -450,6 +662,11 @@ class LobbyView:
         >>> output = lobbyview.bills(congress_number=111, bill_chamber="H", bill_number=4173)
         >>> output.data[0]['bill_state']
         'ENACTED:SIGNED'
+
+        >>> output = lobbyview.bills(congress_number=111, bill_chamber="H", bill_number=4173)
+        >>> print(output)
+        Bills:
+          4173 (Congress: 111, Sponsor: F000339)
         """
         query_params = []
         if congress_number:
@@ -457,21 +674,21 @@ class LobbyView:
         if bill_chamber:
             query_params.append(f'bill_chamber=eq.{bill_chamber}')
         if bill_resolution_type:
-            query_params.append(f'bill_resolution_type=eq.{bill_resolution_type}')
+            query_params.append(f'bill_resolution_type=eq.{bill_resolution_type}') #!?
         if bill_number:
             query_params.append(f'bill_number=eq.{bill_number}')
         if bill_state:
-            query_params.append(f'bill_state=ilike.*{bill_state}*')
+            query_params.append(f'bill_state=ilike.*{bill_state}*') #!?
         if legislator_id:
-            query_params.append(f'legislator_id=eq.{legislator_id}')
+            query_params.append(f'legislator_id=eq.{legislator_id}') #!?
         if min_introduced_date:
-            query_params.append(f'bill_introduced_datetime=gte.{min_introduced_date}')
+            query_params.append(f'bill_introduced_datetime=gte.{min_introduced_date}') #!?
         if max_introduced_date:
-            query_params.append(f'bill_introduced_datetime=lte.{max_introduced_date}')
+            query_params.append(f'bill_introduced_datetime=lte.{max_introduced_date}') #!?
         if min_updated_date:
-            query_params.append(f'bill_date_updated=gte.{min_updated_date}')
+            query_params.append(f'bill_date_updated=gte.{min_updated_date}') #!?
         if max_updated_date:
-            query_params.append(f'bill_date_updated=lte.{max_updated_date}')
+            query_params.append(f'bill_date_updated=lte.{max_updated_date}') #!?
         if page != 1:
             query_params.append(f'page={page}')
 
@@ -497,18 +714,30 @@ class LobbyView:
         >>> output = lobbyview.clients(client_name="Microsoft Corporation")
         >>> output.data[0]['client_uuid']
         '44563806-56d2-5e99-84a1-95d22a7a69b3'
+
+        >>> output = lobbyview.clients(client_name="Microsoft Corporation")
+        >>> print(output)
+        Clients:
+          Microsoft Corporation (ID: 44563806-56d2-5e99-84a1-95d22a7a69b3)
+          PCT Government Relations on behalf of Microsoft Corporation (ID: 62eb98f6-ea3a-542d-abdb-7d2fce94b4f8)
+          Cornerstone Government Affairs obo Microsoft Corporation (ID: d6634602-1d0b-560d-b4ac-e04194782ad3)
+
+        >>> output = lobbyview.clients(client_uuid='44563806-56d2-5e99-84a1-95d22a7a69b3', min_naics=511209, max_naics=511211, naics_description='Applications development and publishing')
+        >>> print(output)
+        Clients:
+          Microsoft Corporation (ID: 44563806-56d2-5e99-84a1-95d22a7a69b3)
         """
         query_params = []
         if client_uuid:
-            query_params.append(f'client_uuid=eq.{client_uuid}')
+            query_params.append(f'client_uuid=eq.{client_uuid}') #!?
         if client_name:
             query_params.append(f'client_name=ilike.*{client_name}*')
         if min_naics:
-            query_params.append(f'primary_naics=gte.{min_naics}')
+            query_params.append(f'primary_naics=gte.{min_naics}') #!?
         if max_naics:
-            query_params.append(f'primary_naics=lte.{max_naics}')
+            query_params.append(f'primary_naics=lte.{max_naics}') #!?
         if naics_description:
-            query_params.append(f'naics_description=ilike.*{naics_description}*')
+            query_params.append(f'naics_description=ilike.*{naics_description}*') #!?
         if page != 1:
             query_params.append(f'page={page}')
 
@@ -531,12 +760,12 @@ class LobbyView:
         :param int report_year: Year of the report
         :param str report_quarter_code: Quarter period of the report
         :param str min_amount: Minimum lobbying firm income or lobbying expense
-        (in-house)
+            (in-house)
         :param str max_amount: Maximum lobbying firm income or lobbying expense
-        (in-house)
+            (in-house)
         :param bool is_no_activity: Quarterly activity indicator
         :param bool is_client_self_filer: An organization employing its own in-house
-        lobbyist(s)
+            lobbyist(s)
         :param bool is_amendment: Amendment of previous report
         :param int page: Page number of the results, default is 1
         :return: ReportResponse object containing the report data
@@ -545,30 +774,35 @@ class LobbyView:
         >>> output = lobbyview.reports(report_year=2020, report_quarter_code="2", is_client_self_filer=True, report_uuid="4b799814-3e94-5ee1-8dd4-b32aead9aca6")
         >>> output.data[0]['amount']
         '$11,680,000.00'
+
+        >>> output = lobbyview.reports(report_year=2020, report_quarter_code="2", is_client_self_filer=True, report_uuid="4b799814-3e94-5ee1-8dd4-b32aead9aca6")
+        >>> print(output)
+        Reports:
+          4b799814-3e94-5ee1-8dd4-b32aead9aca6 (Year: 2020, Quarter: 2)
         """
         query_params = []
         if report_uuid:
             query_params.append(f'report_uuid=eq.{report_uuid}')
         if client_uuid:
-            query_params.append(f'client_uuid=eq.{client_uuid}')
+            query_params.append(f'client_uuid=eq.{client_uuid}') #!?
         if registrant_uuid:
-            query_params.append(f'registrant_uuid=eq.{registrant_uuid}')
+            query_params.append(f'registrant_uuid=eq.{registrant_uuid}') #!?
         if registrant_name:
-            query_params.append(f'registrant_name=ilike.*{registrant_name}*')
+            query_params.append(f'registrant_name=ilike.*{registrant_name}*') #!?
         if report_year:
             query_params.append(f'report_year=eq.{report_year}')
         if report_quarter_code:
             query_params.append(f'report_quarter_code=eq.{report_quarter_code}')
         if min_amount:
-            query_params.append(f'amount=gte.{min_amount}')
+            query_params.append(f'amount=gte.{min_amount}') #!?
         if max_amount:
-            query_params.append(f'amount=lte.{max_amount}')
+            query_params.append(f'amount=lte.{max_amount}') #!?
         if is_no_activity is not None:
-            query_params.append(f'is_no_activity=eq.{is_no_activity}')
+            query_params.append(f'is_no_activity=eq.{is_no_activity}') #!?
         if is_client_self_filer is not None:
             query_params.append(f'is_client_self_filer=eq.{is_client_self_filer}')
         if is_amendment is not None:
-            query_params.append(f'is_amendment=eq.{is_amendment}')
+            query_params.append(f'is_amendment=eq.{is_amendment}') #!?
         if page != 1:
             query_params.append(f'page={page}')
 
@@ -591,6 +825,19 @@ class LobbyView:
 
         >>> lobbyview = LobbyView(LOBBYVIEW_TOKEN)
         >>> output = lobbyview.issues(issue_code="TRD")
+        >>> output.data[0]['report_uuid']
+        '00016ab3-2246-5af8-a68d-05af40dfde68'
+
+        >>> output = lobbyview.issues(issue_code="TRD")
+        >>> print(output)
+        Issues:
+          TRD (Report UUID: 00016ab3-2246-5af8-a68d-05af40dfde68, Issue Ordi: 2)
+          TRD (Report UUID: 0001f9b9-84d7-5ceb-af03-8987bb76d593, Issue Ordi: 1)
+          TRD (Report UUID: 00020868-67be-5975-955d-7ecab8d42e6e, Issue Ordi: 2)
+          TRD (Report UUID: 00040172-6cda-5b31-8d83-9c1bcfd4b289, Issue Ordi: 1)
+          TRD (Report UUID: 00047fc7-2207-5f3b-951d-692b9f35825b, Issue Ordi: 1)
+          TRD (Report UUID: 000759fa-dc93-5849-b1e5-7aa751e86433, Issue Ordi: 4)
+        ...
         """
         query_params = []
         if report_uuid:
@@ -621,9 +868,9 @@ class LobbyView:
         :param int min_report_year: Minimum year of the report
         :param int max_report_year: Maximum year of the report
         :param int min_bills_sponsored: Minimum number of bills sponsored by the legislator
-        in a specific year lobbied by the client
+            in a specific year lobbied by the client
         :param int max_bills_sponsored: Maximum number of bills sponsored by the legislator
-        in a specific year lobbied by the client
+            in a specific year lobbied by the client
         :param int page: Page number of the results, default is 1
         :return: NetworkResponse object containing the network data
 
@@ -631,6 +878,17 @@ class LobbyView:
         >>> output = lobbyview.networks(client_uuid="44563806-56d2-5e99-84a1-95d22a7a69b3", legislator_id="M000303")
         >>> output.data[0]['report_year']
         2006
+
+        >>> output = lobbyview.networks(client_uuid="44563806-56d2-5e99-84a1-95d22a7a69b3", legislator_id="M000303")
+        >>> print(output)
+        Networks:
+          Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Legislator ID: M000303, Year: 2006, Bills Sponsored: 1
+          Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Legislator ID: M000303, Year: 2017, Bills Sponsored: 1
+
+        >>> output = lobbyview.networks(min_report_year=2016, max_report_year=2018, min_bills_sponsored=0, max_bills_sponsored=2, client_uuid="44563806-56d2-5e99-84a1-95d22a7a69b3", legislator_id="M000303")
+        >>> print(output)
+        Networks:
+          Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Legislator ID: M000303, Year: 2017, Bills Sponsored: 1
         """
         query_params = []
         if client_uuid:
@@ -638,13 +896,13 @@ class LobbyView:
         if legislator_id:
             query_params.append(f'legislator_id=eq.{legislator_id}')
         if min_report_year:
-            query_params.append(f'report_year=gte.{min_report_year}')
+            query_params.append(f'report_year=gte.{min_report_year}') #!?
         if max_report_year:
-            query_params.append(f'report_year=lte.{max_report_year}')
+            query_params.append(f'report_year=lte.{max_report_year}') #!?
         if min_bills_sponsored:
-            query_params.append(f'n_bills_sponsored=gte.{min_bills_sponsored}')
+            query_params.append(f'n_bills_sponsored=gte.{min_bills_sponsored}') #!?
         if max_bills_sponsored:
-            query_params.append(f'n_bills_sponsored=lte.{max_bills_sponsored}')
+            query_params.append(f'n_bills_sponsored=lte.{max_bills_sponsored}') #!?
         if page != 1:
             query_params.append(f'page={page}')
 
@@ -667,12 +925,25 @@ class LobbyView:
 
         >>> lobbyview = LobbyView(LOBBYVIEW_TOKEN)
         >>> output = lobbyview.texts(issue_code="HCR", issue_text="covid")
+        >>> output.data[0]['issue_ordi']
+        1
+
+        >>> output = lobbyview.texts(issue_code="HCR", issue_text="covid")
+        >>> print(output)
+        Texts:
+          Issue Code: HCR, Issue Text: HR 748 CARES Act - Issues related to COVID-19 relief
+        ...
+
+        >>> output = lobbyview.texts(report_uuid='000bef17-9f0a-5d7c-8660-edca16e1dfce', issdue_ordi=1)
+        >>> print(output)
+        Texts:
+          Issue Code: HCR, Issue Text: HR 748 CARES Act - Issues related to COVID-19 relief
         """
         query_params = []
         if report_uuid:
-            query_params.append(f'report_uuid=eq.{report_uuid}')
+            query_params.append(f'report_uuid=eq.{report_uuid}') #!?
         if issue_ordi:
-            query_params.append(f'issue_ordi=eq.{issue_ordi}')
+            query_params.append(f'issue_ordi=eq.{issue_ordi}') #!?
         if issue_code:
             query_params.append(f'issue_code=eq.{issue_code}')
         if issue_text:
@@ -697,9 +968,9 @@ class LobbyView:
         :param int report_year: Year of the report
         :param str report_quarter_code: Quarter period of the report
         :param int min_bills_sponsored: Minimum number of bills sponsored by the legislator
-        in a specific quarter lobbied by the client
+            in a specific quarter lobbied by the client
         :param int max_bills_sponsored: Maximum number of bills sponsored by the legislator
-        in a specific quarter lobbied by the client
+            in a specific quarter lobbied by the client
         :param int page: Page number of the results, default is 1
         :return: QuarterLevelNetworkResponse object containing the quarter-level network data
 
@@ -707,6 +978,17 @@ class LobbyView:
         >>> output = lobbyview.quarter_level_networks(client_uuid="44563806-56d2-5e99-84a1-95d22a7a69b3", legislator_id="M000303", report_year=2017, report_quarter_code=4)
         >>> output.data[0]['n_bills_sponsored']
         1
+
+        >>> output = lobbyview.quarter_level_networks(client_uuid="44563806-56d2-5e99-84a1-95d22a7a69b3", legislator_id="M000303", report_year=2017, report_quarter_code=4)
+        >>> print(output)
+        Quarter-Level Networks:
+          Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Legislator ID: M000303, Year: 2017, Quarter: 4, Bills Sponsored: 1
+
+        >>> output = lobbyview.quarter_level_networks(min_bills_sponsored=0, max_bills_sponsored=2, client_uuid="44563806-56d2-5e99-84a1-95d22a7a69b3", legislator_id="M000303")
+        >>> print(output)
+        Quarter-Level Networks:
+          Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Legislator ID: M000303, Year: 2006, Quarter: 34, Bills Sponsored: 1
+          Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Legislator ID: M000303, Year: 2017, Quarter: 4, Bills Sponsored: 1
         """
         query_params = []
         if client_uuid:
@@ -718,9 +1000,9 @@ class LobbyView:
         if report_quarter_code:
             query_params.append(f'report_quarter_code=eq.{report_quarter_code}')
         if min_bills_sponsored:
-            query_params.append(f'n_bills_sponsored=gte.{min_bills_sponsored}')
+            query_params.append(f'n_bills_sponsored=gte.{min_bills_sponsored}') #!?
         if max_bills_sponsored:
-            query_params.append(f'n_bills_sponsored=lte.{max_bills_sponsored}')
+            query_params.append(f'n_bills_sponsored=lte.{max_bills_sponsored}') #!?
         if page != 1:
             query_params.append(f'page={page}')
 
@@ -738,7 +1020,7 @@ class LobbyView:
 
         :param int congress_number: Session of Congress
         :param str bill_chamber: Chamber of the legislative branch (Component of the
-        bill_id composite key)
+            bill_id composite key)
         :param str bill_resolution_type: Bill type (Component of the bill_id composite key)
         :param int bill_number: Bill number (Component of the bill_id composite key)
         :param str report_uuid: Unique identifier of the report
@@ -751,6 +1033,19 @@ class LobbyView:
         >>> output = lobbyview.bill_client_networks(congress_number=114, bill_chamber="H", bill_number=1174, client_uuid="44563806-56d2-5e99-84a1-95d22a7a69b3")
         >>> output.data[0]['issue_ordi']
         2
+
+        >>> output = lobbyview.bill_client_networks(congress_number=114, bill_chamber="H", bill_number=1174, client_uuid="44563806-56d2-5e99-84a1-95d22a7a69b3")
+        >>> print(output)
+        Bill-Client Networks:
+          Bill Number: 1174, Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Issue Ordi: 2
+          Bill Number: 1174, Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Issue Ordi: 5
+          Bill Number: 1174, Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Issue Ordi: 4
+        ...
+
+        >>> output = lobbyview.bill_client_networks(bill_resolution_type=None, report_uuid='006bd48b-59cf-5cbc-99b8-fc213e509a86', issue_ordi=2)
+        >>> print(output)
+        Bill-Client Networks:
+          Bill Number: 1174, Client UUID: 44563806-56d2-5e99-84a1-95d22a7a69b3, Issue Ordi: 2
         """
         query_params = []
         if congress_number:
@@ -758,13 +1053,13 @@ class LobbyView:
         if bill_chamber:
             query_params.append(f'bill_chamber=eq.{bill_chamber}')
         if bill_resolution_type:
-            query_params.append(f'bill_resolution_type=eq.{bill_resolution_type}')
+            query_params.append(f'bill_resolution_type=eq.{bill_resolution_type}') #!?
         if bill_number:
             query_params.append(f'bill_number=eq.{bill_number}')
         if report_uuid:
-            query_params.append(f'report_uuid=eq.{report_uuid}')
+            query_params.append(f'report_uuid=eq.{report_uuid}') #!?
         if issue_ordi:
-            query_params.append(f'issue_ordi=eq.{issue_ordi}')
+            query_params.append(f'issue_ordi=eq.{issue_ordi}') #!?
         if client_uuid:
             query_params.append(f'client_uuid=eq.{client_uuid}')
         if page != 1:
@@ -782,7 +1077,8 @@ if __name__ == "__main__":
     LOBBYVIEW_TOKEN = os.environ.get('LOBBYVIEW_TOKEN', "NO TOKEN FOUND")
 
     # run doctests, pass in the LobbyView object with the token
-    results = doctest.testmod(extraglobs={'lobbyview': LobbyView(LOBBYVIEW_TOKEN)})
+    results = doctest.testmod(extraglobs={'lobbyview': LobbyView(LOBBYVIEW_TOKEN)},
+                              optionflags=doctest.ELLIPSIS)
     results_string = f"{results.attempted-results.failed}/{results.attempted} TESTS PASSED"
     if results.failed == 0:
         print(results_string)
