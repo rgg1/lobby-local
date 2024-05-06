@@ -50,6 +50,8 @@ Here's a simple example of how to use the LobbyView package to retrieve legislat
    from lobbyview import LobbyView
 
    lv = LobbyView(lobbyview_token="your-api-token")
+   # or, if you have set the LOBBYVIEW_TOKEN environment variable:
+   lv = LobbyView(os.environ.get("LOBBYVIEW_TOKEN"))
 
    # Search for legislators by ID (bioguide ID)
    legislators = lv.legislators(legislator_id="M000303")

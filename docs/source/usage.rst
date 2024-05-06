@@ -16,6 +16,14 @@ To start using the LobbyView package, you need to create an instance of the ``Lo
 
 Replace ``'your-api-token'`` with your actual API token.
 
+When making a query and retreiving data, the LobbyView package will return a response object that contains the data retrieved from the API. The response object has the following attributes (assuming the response object is ``self``):
+self.data: This is the actual data that was retrieved from the API.
+self.current_page: This is the current page number in the data pagination.
+self.total_pages: This is the total number of pages available in the data.
+self.total_rows: This is the total number of rows available in the data, not necessarily the number of rows in the current response.
+
+You'll mainly be interested in the ``data`` attribute, which contains the actual data retrieved from the API. Below are examples of how to use the LobbyView package to retrieve data about legislators, bills, clients, reports, issues, networks, texts, quarter-level networks, and bill-client networks.
+
 Retrieving Legislator Data
 --------------------------
 
@@ -148,8 +156,34 @@ You can retrieve bill-client network data using the ``bill_client_networks`` met
     report_uuid = bill_client_networks_output.data[0]['report_uuid']
     print(report_uuid)  # Output: '006bd48b-59cf-5cbc-99b8-fc213e509a86'
 
+Using Pagination to Retrieve Data
+---------------------------------
+
+The ``paginate`` method allows you to retrieve data in manageable chunks, which is especially useful when dealing with large datasets. Here's an example of how to use it:
+
+.. code-block:: python
+
+    # Get issue text data for all reports that contain the word "covid" under the issue code "HCR"
+    for text in lobbyview.paginate(lobbyview.texts, issue_code="HCR", issue_text="covid"):
+        print(f"Issue Code: {text['issue_code']}")
+    # output looks like:
+    # Retrieving page 1...
+    # Issue Code: HCR
+    # ...
+    # Retrieving page 2...
+    # Issue Code: HCR
+    # ...
+
+
 These examples demonstrate how to use the main methods provided by the LobbyView package to retrieve different types of data from the LobbyView API. Each method returns a response object containing the retrieved data, which can be accessed using the ``data`` attribute.
 
-Remember to handle any exceptions that may occur during API requests, such as authentication errors or rate limiting.
+Remember to handle any exceptions that may occur during API requests, such as authentication errors or rate limiting (more information about specific errors can be found in the API documentation).
 
 For more detailed information on the available parameters and return values for each method, please refer to the API documentation.
+
+These examples demonstrate how to use the main methods provided by the LobbyView package to retrieve different types of data from the LobbyView API. Each method returns a response object containing the retrieved data (as explained at the top of this page), which can be accessed using the ``data`` attribute.
+
+Remember to handle any exceptions that may occur during API requests, such as authentication errors or rate limiting (more information about specific errors on API documentation).
+
+For more detailed information on the available parameters and return values for each method, please also refer to the API documentation.
+
