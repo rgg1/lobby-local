@@ -15,6 +15,7 @@ Welcome to LobbyView's documentation
    usage
    api
    registration
+   troubleshooting
 
 
 Indices and tables
