@@ -30,15 +30,30 @@ Once installed, you can import the package in your Python code:
 
 ``import lobbyview``
 
-To use the package, you need to obtain an API token from the LobbyView service. Set the ``LOBBYVIEW_TOKEN`` environment variable with your API token:
+To use the LobbyView package, you need to obtain an API token from the LobbyView service. There are two ways to provide your API token to the package:
 
-.. code-block:: text
+1. Set the LOBBYVIEW_TOKEN environment variable:
 
-    export LOBBYVIEW_TOKEN=your-api-token  # For Unix/Linux
+    For Unix/Linux (includes MacOS):
+    Open a terminal and run the following command, replacing your-api-token with your actual API token:
+    .. code-block:: text
+        export LOBBYVIEW_TOKEN=your-api-token
 
-    set LOBBYVIEW_TOKEN=your-api-token  # For Windows
+    For Windows:
+    Open the Command Prompt and run the following command, replacing your-api-token with your actual API token:
+    .. code-block:: text
+        set LOBBYVIEW_TOKEN=your-api-token
 
-Replace ``your-api-token`` with your actual API token.
+    Setting the environment variable allows you to keep your API token separate from your code, which is generally considered a good practice for security and maintainability.
+
+2. Pass the API token directly in your code: You can also provide the API token directly when initializing the LobbyView object in your Python code. Here's an example:
+    .. code-block:: python
+        from lobbyview import LobbyView
+
+        lv = LobbyView(lobbyview_token="your-api-token")
+    Replace your-api-token with your actual API token.
+
+While passing the API token directly in your code is convenient, it's usually best practice to use an environment variable to store sensitive information like API tokens. This way, you can avoid accidentally exposing your token if you share your code or publish it to a public repository.
 
 Example Usage
 -------------
@@ -49,9 +64,11 @@ Here's a simple example of how to use the LobbyView package to retrieve legislat
 
    from lobbyview import LobbyView
 
-   lv = LobbyView(lobbyview_token="your-api-token")
-   # or, if you have set the LOBBYVIEW_TOKEN environment variable:
-   lv = LobbyView(os.environ.get("LOBBYVIEW_TOKEN"))
+    # If you have set the LOBBYVIEW_TOKEN environment variable:
+    lv = LobbyView(os.environ.get("LOBBYVIEW_TOKEN"))
+
+    # Alternatively, you can pass the API token directly:
+    # lv = LobbyView(lobbyview_token="your-api-token")
 
    # Search for legislators by ID (bioguide ID)
    legislators = lv.legislators(legislator_id="M000303")
