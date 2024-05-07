@@ -175,15 +175,9 @@ The ``paginate`` method allows you to retrieve data in manageable chunks, which 
     # ...
 
 
-These examples demonstrate how to use the main methods provided by the LobbyView package to retrieve different types of data from the LobbyView API. Each method returns a response object containing the retrieved data, which can be accessed using the ``data`` attribute.
-
-Remember to handle any exceptions that may occur during API requests, such as authentication errors or rate limiting (more information about specific errors can be found in the API documentation).
-
-For more detailed information on the available parameters and return values for each method, please refer to the API documentation.
-
 These examples demonstrate how to use the main methods provided by the LobbyView package to retrieve different types of data from the LobbyView API. Each method returns a response object containing the retrieved data (as explained at the top of this page), which can be accessed using the ``data`` attribute.
 
-Remember to handle any exceptions that may occur during API requests, such as authentication errors or rate limiting (more information about specific errors on API documentation).
+Remember to handle any exceptions that may occur during API requests, such as authentication errors or rate limiting (more information about specific errors can be found in the API documentation and troubleshooting pages of this documentation).
 
 For more detailed information on the available parameters and return values for each method, please also refer to the API documentation.
 

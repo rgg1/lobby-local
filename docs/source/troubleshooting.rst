@@ -53,7 +53,7 @@ Common Issues and Solutions
 Getting Help
 ------------
 
-If you encounter any issues or have questions that are not covered in this troubleshooting guide, please open an issue on the [LobbyView Python Package GitHub repository](https://github.com/lobbyview/LobbyViewPythonPackage). When opening an issue, provide as much detail as possible, including:
+If you encounter any issues or have questions that are not covered in this troubleshooting guide, please open an issue on the LobbyView Python Package GitHub repository: https://github.com/lobbyview/LobbyViewPythonPackage. When opening an issue, provide as much detail as possible, including:
 
 - The version of the LobbyView package you are using.
 - The specific error message or exception you encountered.
