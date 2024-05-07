@@ -58,7 +58,7 @@ Setting the environment variable allows you to keep your API token separate from
 
     lv = LobbyView(lobbyview_token="your-api-token")
 
-Replace your-api-token with your actual API token. BRUH WHAT.
+Replace your-api-token with your actual API token.
 
 While passing the API token directly in your code is convenient, it's usually best practice to use an environment variable to store sensitive information like API tokens. This way, you can avoid accidentally exposing your token if you share your code or publish it to a public repository.
 
