@@ -36,12 +36,16 @@ To use the LobbyView package, you need to obtain an API token from the LobbyView
 
 For Unix/Linux (includes MacOS):
 Open a terminal and run the following command, replacing your-api-token with your actual API token:
+
 .. code-block:: text
+
     export LOBBYVIEW_TOKEN=your-api-token
 
 For Windows:
 Open the Command Prompt and run the following command, replacing your-api-token with your actual API token:
+
 .. code-block:: text
+
     set LOBBYVIEW_TOKEN=your-api-token
 
 Setting the environment variable allows you to keep your API token separate from your code, which is generally considered a good practice for security and maintainability.
@@ -49,11 +53,12 @@ Setting the environment variable allows you to keep your API token separate from
 2. Pass the API token directly in your code - You can also provide the API token directly when initializing the LobbyView object in your Python code. Here's an example:
     
 .. code-block:: python
+
     from lobbyview import LobbyView
 
     lv = LobbyView(lobbyview_token="your-api-token")
 
-Replace your-api-token with your actual API token. BRUH.
+Replace your-api-token with your actual API token. BRUH WHAT.
 
 While passing the API token directly in your code is convenient, it's usually best practice to use an environment variable to store sensitive information like API tokens. This way, you can avoid accidentally exposing your token if you share your code or publish it to a public repository.
 
