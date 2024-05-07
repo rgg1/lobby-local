@@ -46,7 +46,8 @@ To use the LobbyView package, you need to obtain an API token from the LobbyView
 
     Setting the environment variable allows you to keep your API token separate from your code, which is generally considered a good practice for security and maintainability.
 
-2. Pass the API token directly in your code: You can also provide the API token directly when initializing the LobbyView object in your Python code. Here's an example:
+2. Pass the API token directly in your code - You can also provide the API token directly when initializing the LobbyView object in your Python code. Here's an example:
+    
     .. code-block:: python
         from lobbyview import LobbyView
 

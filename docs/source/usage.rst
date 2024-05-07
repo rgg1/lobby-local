@@ -131,6 +131,8 @@ You can retrieve text data associated with lobbying issues using the ``texts`` m
 Retrieving Quarter-Level Network Data
 -------------------------------------
 
+This API is private and requires special permission to access, users do not have access by default. Thus, trying to use this method without proper permissions will cause an `UnauthorizedError` to occur. If you are interested in this API, please contact the LobbyView team at lobbydata@gmail.com.
+
 You can retrieve quarter-level network data using the ``quarter_level_networks`` method:
 
 .. code-block:: python
@@ -144,6 +146,8 @@ You can retrieve quarter-level network data using the ``quarter_level_networks``
 
 Retrieving Bill-Client Network Data
 -----------------------------------
+
+This API is private and requires special permission to access, users do not have access by default. Thus, trying to use this method without proper permissions will cause an `UnauthorizedError` to occur. If you are interested in this API, please contact the LobbyView team at lobbydata@gmail.com.
 
 You can retrieve bill-client network data using the ``bill_client_networks`` method:
 
