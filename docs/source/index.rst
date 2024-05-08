@@ -16,6 +16,7 @@ Welcome to LobbyView's documentation
    api
    registration
    troubleshooting
+   detailed_parameter_values
 
 
 Indices and tables
